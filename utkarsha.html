@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Happy Birthday Utkarsha!</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Poppins:wght@300;400;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #ffdbde 0%, #fecfef 100%);
+            color: #333;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            position: fixed;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.6);
+            height: 100vh;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+        }
+
+        /* Sound Control Button */
+        .sound-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 999;
+            background: rgba(255, 255, 255, 0.8);
+            border: none;
+            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: none; /* Shown after start */
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Page Structure */
+        .page {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100%;
+            padding: 40px 20px;
+            text-align: center;
+            animation: fadeIn 0.6s ease-out;
+            overflow-y: auto;
+        }
+
+        .page.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            width: 100%;
+        }
+        
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ddd;
+            transition: background 0.3s;
+        }
+
+        .dot.active { background: #ff4757; }
+
+        /* Typography */
+        h1 {
+            font-family: 'Caveat', cursive;
+            font-size: 3rem;
+            color: #ff4757;
+            margin-bottom: 10px;
+        }
+
+        p.subtitle {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        /* Buttons */
+        .btn {
+            background: linear-gradient(to right, #ff6b6b, #ff4757);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-top: auto;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+            transition: transform 0.2s;
+        }
+
+        .btn:active { transform: scale(0.95); }
+        .btn:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
+
+        /* Start Screen Specific */
+        #page-start {
+            justify-content: center;
+            background: linear-gradient(to bottom, #2a0845, #6441A5);
+            color: white;
+        }
+        #page-start h1 { color: white; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+
+        /* Cake Animation */
+        .cake { font-size: 6rem; margin: 40px 0; animation: bounce 2s infinite; cursor: pointer;}
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        /* Balloons */
+        .balloons-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .balloon-card {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 70px;
+        }
+
+        .balloon-card.popped {
+            background: #ffeaa7;
+            transform: scale(0.98);
+        }
+
+        .balloon-icon { font-size: 1.8rem; pointer-events: none;}
+        .balloon-text { 
+            display: none; 
+            font-size: 1rem; 
+            color: #d63031; 
+            font-weight: 600; 
+            pointer-events: none;
+        }
+
+        /* Memory Gallery */
+        .gallery-container {
+            position: relative;
+            width: 100%;
+            max-width: 320px;
+            height: 400px;
+            margin: 0 auto;
+        }
+
+        .memory-frame {
+            position: absolute;
+            top: 0; left: 0;
+            background: white;
+            padding: 15px 15px 40px 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.4s, opacity 0.4s;
+            transform-origin: center bottom;
+        }
+
+        .memory-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        .memory-caption {
+            font-family: 'Caveat', cursive;
+            font-size: 1.5rem;
+            position: absolute;
+            bottom: 10px;
+            left: 0; width: 100%;
+            text-align: center;
+            color: #333;
+        }
+
+        .gallery-hint {
+            font-size: 0.9rem;
+            color: #ff4757;
+            margin-top: 20px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Letter */
+        .letter-container {
+            background: #fff9f0;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            text-align: left;
+            width: 100%;
+            margin-bottom: 20px;
+            border: 1px solid #ffeaa7;
+        }
+        .letter-container p { font-size: 0.95rem; margin-bottom: 15px; line-height: 1.6; }
+        .signature { font-family: 'Caveat', cursive; font-size: 1.8rem; text-align: right; color: #ff4757; margin-top: 15px; }
+
+    </style>
+</head>
+<body>
+
+    <!-- Audio Element Preloaded -->
+    <audio id="bgm" loop preload="auto">
+        <source src="utkarsha_birthday.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="container">
+        
+        <!-- Sound Toggle Button -->
+        <button id="soundToggle" class="sound-btn" onclick="toggleSound()">🎶</button>
+
+        <!-- PAGE 0: START -->
+        <div id="page-start" class="page active">
+            <div style="font-size: 5rem; margin-bottom: 20px; animation: bounce 2s infinite;">💌</div>
+            <h1 style="font-family: 'Poppins', sans-serif; font-size: 2rem; margin-bottom: 30px;">A surprise for you...</h1>
+            <button class="btn" onclick="startExperience()">Tap to Open 💖</button>
+        </div>
+
+        <!-- PAGE 1: CAKE -->
+        <div id="page-cake" class="page">
+            <div class="progress-container">
+                <div class="dot active"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            </div>
+            <h1>Happy Birthday, Utkarsha!</h1>
+            <p class="subtitle">Just like that, you're turning 23 ✨</p>
+            
+            <div class="cake" onclick="this.innerHTML='🎉'; this.style.fontSize='7rem';">🎂</div>
+            <p style="color: #666; font-size: 0.9rem;">(Tap the cake!)</p>
+
+            <button class="btn" onclick="nextPage('page-balloons', 1)">Continue 🎈</button>
+        </div>
+
+        <!-- PAGE 2: BALLOONS -->
+        <div id="page-balloons" class="page">
+            <div class="progress-container">
+                <div class="dot active"></div><div class="dot active"></div><div class="dot"></div><div class="dot"></div>
+            </div>
+            <h1 style="font-size: 2.2rem;">Pop the balloons</h1>
+            <p class="subtitle">Pop all 5 to see why you're loved.</p>
+
+            <div class="balloons-container">
+                <div class="balloon-card" onclick="popBalloon(this)">
+                    <div class="balloon-icon">🎈</div>
+                    <span class="balloon-text">Your laugh is my favourite sound.</span>
+                </div>
+                <div class="balloon-card" onclick="popBalloon(this)">
+                    <div class="balloon-icon">🎈</div>
+                    <span class="balloon-text">The world is kinder with you in it.</span>
+                </div>
+                <div class="balloon-card" onclick="popBalloon(this)">
+                    <div class="balloon-icon">🎈</div>
+                    <span class="balloon-text">You make ordinary days feel special.</span>
+                </div>
+                <div class="balloon-card" onclick="popBalloon(this)">
+                    <div class="balloon-icon">🎈</div>
+                    <span class="balloon-text">You believed in me when I didn't.</span>
+                </div>
+                <div class="balloon-card" onclick="popBalloon(this)">
+                    <div class="balloon-icon">🎈</div>
+                    <span class="balloon-text">You remember the little things I forget.</span>
+                </div>
+            </div>
+
+            <button id="btn-balloons" class="btn" disabled onclick="nextPage('page-memories', 2)">Pop all to continue!</button>
+        </div>
+
+        <!-- PAGE 3: MEMORIES -->
+        <div id="page-memories" class="page">
+            <div class="progress-container">
+                <div class="dot active"></div><div class="dot active"></div><div class="dot active"></div><div class="dot"></div>
+            </div>
+            <h1 style="font-size: 2.2rem;">Memory Lane</h1>
+            <p class="subtitle">Tap the photo to see the next one.</p>
+
+            <div class="gallery-container" onclick="nextPhoto()">
+                <div class="memory-frame" style="z-index: 1; transform: rotate(-2deg);">
+                    <img src="IMG_7576.PNG" alt="Utkarsha elegant">
+                    <div class="memory-caption">Absolutely stunning 🖤</div>
+                </div>
+                <div class="memory-frame" style="z-index: 2; transform: rotate(2deg);">
+                    <img src="IMG_7577.PNG" alt="Utkarsha in red">
+                    <div class="memory-caption">Lost in your eyes 💖</div>
+                </div>
+                <div class="memory-frame" style="z-index: 3; transform: rotate(3deg);">
+                    <img src="IMG_7573.JPG.jpeg" alt="Utkarsha at night">
+                    <div class="memory-caption">Shining brighter than the stars 🌟</div>
+                </div>
+                <div class="memory-frame" style="z-index: 4; transform: rotate(-3deg);">
+                    <img src="IMG_7574.JPG.jpeg" alt="Utkarsha">
+                    <div class="memory-caption">The most beautiful ✨</div>
+                </div>
+            </div>
+            <p class="gallery-hint">Tap photo! 👆</p>
+
+            <button id="btn-memories" class="btn" style="display:none;" onclick="nextPage('page-letter', 3)">Read your letter 💌</button>
+        </div>
+
+        <!-- PAGE 4: LETTER -->
+        <div id="page-letter" class="page">
+            <div class="progress-container">
+                <div class="dot active"></div><div class="dot active"></div><div class="dot active"></div><div class="dot active"></div>
+            </div>
+            <h1 style="font-size: 2.2rem;">One last thing...</h1>
+            
+            <div class="letter-container">
+                <p>My dearest,</p>
+                <p>When we first met on August 19, 2026, I never imagined how incredibly special our conversation would become. What started as a simple chat gently blossomed into a deep connection, and before I knew it, I had fallen completely in love with you.</p>
+                <p>What I admire most about you is how genuine you are. Unlike so many others, there is nothing fake about you. I love that you are always beautifully honest and say exactly what is on your mind.</p>
+                <p>You are incredibly pretty, but beyond that, your heart is so pure and innocent. Seeing your smile brightens my entire day, and my world is a better place because of you. I just want to keep making every moment we share special.</p>
+                <div class="signature">I love you so much,<br>Abhi</div>
+            </div>
+
+            <button class="btn" onclick="alert('Love you! ❤️')">Send love back ✨</button>
+        </div>
+
+    </div>
+
+    <script>
+        let poppedBalloons = 0;
+        let audioCtx = null;
+        let isMuted = false;
+        let isPlayingSynth = false;
+
+        const melodyNotes = [
+            { note: 392.00, duration: 0.4 }, { note: 392.00, duration: 0.4 }, { note: 440.00, duration: 0.8 }, { note: 392.00, duration: 0.8 }, { note: 523.25, duration: 0.8 }, { note: 493.88, duration: 1.6 },
+            { note: 392.00, duration: 0.4 }, { note: 392.00, duration: 0.4 }, { note: 440.00, duration: 0.8 }, { note: 392.00, duration: 0.8 }, { note: 587.33, duration: 0.8 }, { note: 523.25, duration: 1.6 },
+            { note: 392.00, duration: 0.4 }, { note: 392.00, duration: 0.4 }, { note: 783.99, duration: 0.8 }, { note: 659.25, duration: 0.8 }, { note: 523.25, duration: 0.8 }, { note: 493.88, duration: 0.8 }, { note: 440.00, duration: 1.2 },
+            { note: 698.46, duration: 0.4 }, { note: 698.46, duration: 0.4 }, { note: 659.25, duration: 0.8 }, { note: 523.25, duration: 0.8 }, { note: 587.33, duration: 0.8 }, { note: 523.25, duration: 2.0 }
+        ];
+
+        function playChimeNote(freq, duration, startOffset) {
+            if (!audioCtx || isMuted || !isPlayingSynth) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime + startOffset);
+            gain.gain.setValueAtTime(0.01, audioCtx.currentTime + startOffset);
+            gain.gain.exponentialRampToValueAtTime(0.08, audioCtx.currentTime + startOffset + 0.05);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + startOffset + duration + 0.3);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(audioCtx.currentTime + startOffset);
+            osc.stop(audioCtx.currentTime + startOffset + duration + 0.4);
+        }
+
+        function playSoftMelodyLoop() {
+            if (!isPlayingSynth) return;
+            let offset = 0;
+            melodyNotes.forEach(item => {
+                playChimeNote(item.note, item.duration * 0.8, offset);
+                offset += item.duration * 0.6;
+            });
+            setTimeout(() => {
+                if (isPlayingSynth) playSoftMelodyLoop();
+            }, (offset + 1.2) * 1000);
+        }
+
+        function startExperience() {
+            document.getElementById('soundToggle').style.display = 'flex';
+            
+            const bgm = document.getElementById('bgm');
+            bgm.volume = 0.8;
+            const playPromise = bgm.play();
+
+            if (playPromise !== undefined) {
+                playPromise.catch(() => {
+                    try {
+                        const AudioContext = window.AudioContext || window.webkitAudioContext;
+                        audioCtx = new AudioContext();
+                        if (audioCtx.state === 'suspended') audioCtx.resume();
+                        isPlayingSynth = true;
+                        playSoftMelodyLoop();
+                    } catch(e) { console.log(e); }
+                });
+            }
+
+            nextPage('page-cake', 0);
+        }
+
+        function toggleSound() {
+            const bgm = document.getElementById('bgm');
+            const btn = document.getElementById('soundToggle');
+            isMuted = !isMuted;
+            if (isMuted) {
+                bgm.pause();
+                isPlayingSynth = false;
+                btn.innerText = "🔇";
+            } else {
+                btn.innerText = "🎶";
+                bgm.play().catch(() => {
+                    isPlayingSynth = true;
+                    playSoftMelodyLoop();
+                });
+            }
+        }
+
+        function nextPage(pageId, progressIndex) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        function popBalloon(card) {
+            if (!card.classList.contains('popped')) {
+                card.classList.add('popped');
+                card.querySelector('.balloon-icon').style.display = 'none';
+                card.querySelector('.balloon-text').style.display = 'block';
+                card.style.transform = "scale(1.1)";
+                setTimeout(() => card.style.transform = "scale(0.98)", 150);
+                poppedBalloons++;
+                
+                if (poppedBalloons === 5) {
+                    const btn = document.getElementById('btn-balloons');
+                    btn.disabled = false;
+                    btn.innerText = "Next Step 📸";
+                    btn.style.animation = "pulse 1s infinite";
+                }
+            }
+        }
+
+        function nextPhoto() {
+            const frames = document.querySelectorAll('.memory-frame');
+            let topFrame = null;
+            for (let i = frames.length - 1; i >= 0; i--) {
+                if (frames[i].style.opacity !== '0') {
+                    topFrame = frames[i];
+                    break;
+                }
+            }
+            if (topFrame) {
+                topFrame.style.transform = 'translateX(-100%) rotate(-10deg)';
+                topFrame.style.opacity = '0';
+                const remaining = Array.from(frames).filter(f => f.style.opacity !== '0').length;
+                if (remaining === 0) {
+                    document.querySelector('.gallery-hint').style.display = 'none';
+                    document.getElementById('btn-memories').style.display = 'block';
+                }
+            }
+        }
+    </script>
+</body>
+</html>
